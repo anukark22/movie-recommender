@@ -4,9 +4,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 df = pd.read_csv("C:\\Users\\anuka_b\\OneDrive\\Desktop\\movie\\tmdb_5000_credits.csv")
 
-# flexible tags
+# flexible tag handling
 if 'genres' in df.columns:
     df['tags'] = df['genres']
+elif 'genre' in df.columns:
+    df['tags'] = df['genre']
 elif 'overview' in df.columns:
     df['tags'] = df['overview']
 else:
@@ -27,12 +29,10 @@ def recommend(movie):
     idx = df[df['title'] == movie].index[0]
     distances = similarity[idx]
 
-    movies = sorted(list(enumerate(distances)),
-                    reverse=True,
-                    key=lambda x: x[1])[1:6]
+    movies = sorted(
+        list(enumerate(distances)),
+        reverse=True,
+        key=lambda x: x[1]
+    )[1:6]
 
-    results = []
-    for i in movies:
-        results.append(df.iloc[i[0]].title)
-
-    return results
+    return [df.iloc[i[0]].title for i in movies]
