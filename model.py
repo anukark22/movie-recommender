@@ -2,31 +2,17 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-df = pd.read_csv("C:\\Users\\anuka_b\\OneDrive\\Desktop\\movie\\tmdb_5000_credits.csv")
+df = pd.read_csv(r"C:\Users\anuka_b\OneDrive\Desktop\movie\tmdb_5000_credits.csv")
 
-# flexible tag handling
-if 'genres' in df.columns:
-    df['tags'] = df['genres']
-elif 'genre' in df.columns:
-    df['tags'] = df['genre']
-elif 'overview' in df.columns:
-    df['tags'] = df['overview']
-else:
-    df['tags'] = df.iloc[:, 1]
+df["tags"] = df["genres"].fillna("")
 
-df['tags'] = df['tags'].fillna('')
-
-cv = CountVectorizer(max_features=5000, stop_words='english')
-vectors = cv.fit_transform(df['tags']).toarray()
+cv = CountVectorizer(max_features=5000, stop_words="english")
+vectors = cv.fit_transform(df["tags"]).toarray()
 
 similarity = cosine_similarity(vectors)
 
-
 def recommend(movie):
-    if movie not in df['title'].values:
-        return []
-
-    idx = df[df['title'] == movie].index[0]
+    idx = df[df["title"] == movie].index[0]
     distances = similarity[idx]
 
     movies = sorted(
